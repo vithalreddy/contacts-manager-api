@@ -8,6 +8,19 @@ module.exports = () => {
   const routes = require("./routes");
   const { errorHandler, auth: authMiddleware } = require("./middlewares");
 
+  process.on("unhandledRejection", function(reason, promise) {
+    console.log("unhandledRejection error");
+    console.log(reason);
+    console.log(promise);
+    // process.exit(1); //process exit with error code in dev env only
+  });
+
+  process.on("warning", warning => {
+    console.log("warning error");
+    console.log(warning);
+    console.warn(warning.name); // Print the warning name
+  });
+
   const app = express();
 
   app.use(express.json());

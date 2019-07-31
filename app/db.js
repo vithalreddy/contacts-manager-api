@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 module.exports = () =>
   new Promise(async (resolve, reject) => {
     try {
-      const { dbUrl } = require("../config");
+      const { dbUrl, env } = require("../config");
       mongoose.connect(dbUrl, {
         useNewUrlParser: true,
         useCreateIndex: true
@@ -13,6 +13,13 @@ module.exports = () =>
       db.once("open", () => {
         console.info("Mongoose Conn Successfully Connected.");
       });
+
+      // print mongoose logs in dev env
+      if (env != "production") {
+        mongoose.set("debug", (collectionName, method, query, doc) => {
+          console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
+        });
+      }
 
       resolve();
     } catch (error) {
