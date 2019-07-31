@@ -15,7 +15,7 @@ const schema = new mongoose.Schema(
       trim: true,
       required: [true, "Email is a Required Field"],
       unique: true,
-      match: [/a/, "Please Provide A Email Address"],
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please Provide A Email Address"],
       maxlength: 150
     },
     password: {
