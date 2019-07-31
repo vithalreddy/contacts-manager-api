@@ -10,11 +10,15 @@ module.exports = async (err, req, res, next) => {
 
   if (publicRoutes.includes(req.path)) return next();
 
-  const token = req.headers.authorization || req.query.token;
+  let token = req.headers.authorization || req.query.token;
 
   if (!token) {
     return next(Boom.notFound("Invalid Auth Token."));
   }
+
+  token = token.split(" ");
+  if (token.length === 2) token = token[1];
+  else token = token[0];
 
   const jwtPayload = jwt.verify(token);
 
