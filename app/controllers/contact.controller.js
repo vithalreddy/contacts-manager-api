@@ -59,7 +59,16 @@ ctrl.update = async (req, res, next) => {
 };
 
 ctrl.getAll = async (req, res, next) => {
+  const userId = req.user._id;
   let { page, contactsPerPage, name, number } = req.query;
+
+  if (page && isNaN(page)) {
+    throw Boom.badRequest("Page Number Must Be A Valid Number");
+  }
+
+  if (contactsPerPage && isNaN(contactsPerPage)) {
+    throw Boom.badRequest("Contacts Per Page Must Be A Valid Number");
+  }
 
   page = parseInt(page) || 1;
   contactsPerPage = parseInt(contactsPerPage) || 50;
@@ -71,7 +80,7 @@ ctrl.getAll = async (req, res, next) => {
   const limit = contactsPerPage;
   const offset = page * limit - limit;
 
-  const query = {};
+  const query = { user: userId };
 
   if (name) {
     query.fullName = {
