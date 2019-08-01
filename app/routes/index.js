@@ -7,9 +7,9 @@ const contactCtrl = require("../controllers/contact.controller");
 Routes.route("/contacts")
   .get(catchErrors(contactCtrl.getAll))
   .post(catchErrors(contactCtrl.create))
-  .put(catchErrors(contactCtrl.create));
+  .put(catchErrors(contactCtrl.update));
 
-Routes.post("/auth/login", catchErrors(authCtrl.publish));
-Routes.post("/auth/register", catchErrors(authCtrl.publish));
+Routes.post("/auth/login", catchErrors(authCtrl.login));
+Routes.post("/auth/register", catchErrors(authCtrl.register));
 
 module.exports = Routes;

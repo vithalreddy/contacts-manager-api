@@ -3,6 +3,7 @@ module.exports = () => {
   const cors = require("cors");
   const compress = require("compression");
   const helmet = require("helmet");
+  const morgan = require("morgan")
 
   const { server, apiBaseUrl } = require("../config");
   const routes = require("./routes");
@@ -49,8 +50,10 @@ module.exports = () => {
       optionsSuccessStatus: 200
     })
   );
-
-  app.use(apiBaseUrl, authMiddleware, routes);
+  
+  app.use(morgan('tiny'));
+  app.use(authMiddleware);
+  app.use(apiBaseUrl, routes);
 
   app.use(errorHandler);
 

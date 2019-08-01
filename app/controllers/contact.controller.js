@@ -10,10 +10,8 @@ ctrl.create = async (req, res, next) => {
 
   const isDuplicate = await Contact.findOne(
     {
-      number: {
-        $regex: number,
-        $options: "i"
-      }
+      number,
+      user: req.user._id
     },
     "_id"
   ).lean();
@@ -22,7 +20,10 @@ ctrl.create = async (req, res, next) => {
     return next(Boom.conflict("Contact with This Number Already Exists."));
   }
 
-  const contact = await new Contact({ fullName, number, user: req.user._id }).save();
+  let contact = await new Contact({ fullName, number, user: req.user._id }).save();
+  contact = contact.toObject();
+  delete contact.user;
+  delete contact.__v;
 
   res.status(201).json(contact);
 };
@@ -36,10 +37,7 @@ ctrl.update = async (req, res, next) => {
   if (number != contact.number) {
     const isDuplicate = await Contact.findOne(
       {
-        number: {
-          $regex: number,
-          $options: "i"
-        },
+        number,
         user: userId
       },
       "_id"
@@ -49,7 +47,7 @@ ctrl.update = async (req, res, next) => {
       return next(Boom.conflict("Contact with This Number Already Exists."));
     }
   }
-
+  const updateData = {};
   updateData.fullName = fullName || contact.fullName;
   updateData.number = number || contact.number;
 
@@ -85,14 +83,14 @@ ctrl.getAll = async (req, res, next) => {
   if (name) {
     query.fullName = {
       $regex: name,
-      $options: "i"
+      $options: "gi"
     };
   }
 
   if (number) {
     query.number = {
       $regex: number,
-      $options: "i"
+      $options: "gi"
     };
   }
 
@@ -114,7 +112,7 @@ ctrl.getAll = async (req, res, next) => {
     totalCount,
     selectedPage: page,
     contactsPerPage,
-    totalPages: Math.ceil(result.count / contactsPerPage)
+    totalPages: Math.ceil(totalCount / contactsPerPage)
   };
 
   res.status(200).json(data);
